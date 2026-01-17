@@ -41,6 +41,18 @@
             overflow: hidden;
         }
 
+        /* 粒子特效画布 */
+        #celebrationCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            display: none;
+        }
+
         .container {
             display: grid;
             grid-template-columns: 280px 1fr;
@@ -382,6 +394,105 @@
             color: var(--text-muted);
         }
 
+        /* 能量条样式 */
+        .energy-bar-container {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .energy-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .energy-bar-track {
+            height: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .energy-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 10px;
+            width: 0%;
+            transition: width 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .energy-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* 连胜记录样式 */
+        .streak-section {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .streak-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .streak-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .streak-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .streak-icon {
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .streak-info {
+            flex: 1;
+        }
+
+        .streak-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .streak-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
         /* 主内容区 */
         .main-content {
             display: flex;
@@ -551,6 +662,26 @@
                 <p>为 ADHD 用户设计</p>
             </div>
 
+            <!-- 连胜记录 -->
+            <div class="streak-section sidebar-content">
+                <div class="streak-grid">
+                    <div class="streak-item">
+                        <div class="streak-icon">🔥</div>
+                        <div class="streak-info">
+                            <div class="streak-value" id="streakDays">0</div>
+                            <div class="streak-label">连续天数</div>
+                        </div>
+                    </div>
+                    <div class="streak-item">
+                        <div class="streak-icon">⚡</div>
+                        <div class="streak-info">
+                            <div class="streak-value" id="todayStreak">0</div>
+                            <div class="streak-label">今日连击</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- 当前目标 -->
             <div class="current-goal sidebar-content">
                 <div class="section-title">🎯 当前目标</div>
@@ -578,6 +709,17 @@
                     <div class="stat-item">
                         <div class="stat-value" id="focusTime">0</div>
                         <div class="stat-label">专注分钟</div>
+                    </div>
+                </div>
+
+                <!-- 能量条 -->
+                <div class="energy-bar-container">
+                    <div class="energy-bar-label">
+                        <span>今日能量</span>
+                        <span id="energyProgress">0/8</span>
+                    </div>
+                    <div class="energy-bar-track">
+                        <div class="energy-bar-fill" id="energyBarFill"></div>
                     </div>
                 </div>
             </div>
@@ -635,6 +777,9 @@
             </div>
         </main>
     </div>
+
+    <!-- 粒子特效画布 -->
+    <canvas id="celebrationCanvas"></canvas>
 
     <script>
         // 模式管理
@@ -719,14 +864,22 @@
                         document.getElementById('pomodoroCount').textContent = stats.pomodoros;
                         document.getElementById('focusTime').textContent = stats.focusMinutes;
 
+                        // 更新能量条
+                        updateEnergyBar();
+
+                        // 更新连胜记录
+                        updateStreak();
+
                         // 切换到休息模式
                         switchToRestMode();
 
-                        // 提醒
+                        // 触发庆祝特效
+                        triggerCelebration();
+
+                        // 系统通知
                         if (Notification.permission === 'granted') {
-                            new Notification('专注时间结束！', { body: '休息一下吧！' });
+                            new Notification('🎉 专注时间结束！', { body: '太棒了！休息一下吧！' });
                         }
-                        alert('🎉 专注时间结束！休息一下吧！');
                     }
                 }, 1000);
                 startBtn.textContent = '暂停';
@@ -823,6 +976,83 @@
         document.getElementById('pomodoroCount').textContent = stats.pomodoros;
         document.getElementById('focusTime').textContent = stats.focusMinutes;
 
+        // 能量条功能
+        const DAILY_GOAL = 8; // 每日目标番茄钟数量
+        const energyBarFill = document.getElementById('energyBarFill');
+        const energyProgress = document.getElementById('energyProgress');
+
+        function updateEnergyBar() {
+            const progress = Math.min(stats.pomodoros / DAILY_GOAL, 1);
+            const percentage = progress * 100;
+
+            energyBarFill.style.width = percentage + '%';
+            energyProgress.textContent = `${stats.pomodoros}/${DAILY_GOAL}`;
+
+            // 如果达到目标，改变颜色
+            if (stats.pomodoros >= DAILY_GOAL) {
+                energyBarFill.style.background = 'linear-gradient(90deg, #52C788, #27AE60)';
+            } else {
+                energyBarFill.style.background = 'linear-gradient(90deg, var(--primary), var(--accent))';
+            }
+        }
+
+        // 初始化能量条
+        updateEnergyBar();
+
+        // 连胜机制
+        let streakData = JSON.parse(localStorage.getItem('adhd_streak') || '{"days":0,"lastDate":""}');
+        const streakDaysEl = document.getElementById('streakDays');
+        const todayStreakEl = document.getElementById('todayStreak');
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const yesterday = new Date(Date.now() - 86400000).toDateString();
+
+            // 检查是否是新的一天
+            if (streakData.lastDate !== today) {
+                // 如果昨天有完成番茄钟，连续天数+1
+                if (streakData.lastDate === yesterday && stats.pomodoros > 0) {
+                    streakData.days++;
+                } else if (stats.pomodoros > 0) {
+                    // 如果不是连续的，但今天有完成，重置为1
+                    streakData.days = 1;
+                } else {
+                    // 今天还没完成，保持原样
+                    streakData.days = 0;
+                }
+            }
+
+            // 如果今天完成了番茄钟，更新lastDate
+            if (stats.pomodoros > 0) {
+                streakData.lastDate = today;
+                localStorage.setItem('adhd_streak', JSON.stringify(streakData));
+            }
+
+            // 更新显示
+            streakDaysEl.textContent = streakData.days;
+            todayStreakEl.textContent = stats.pomodoros;
+        }
+
+        // 初始化连胜显示
+        updateStreak();
+
+        // Windows 全局通知系统
+        if ('Notification' in window) {
+            // 检查当前权限状态
+            if (Notification.permission === 'default') {
+                // 请求通知权限
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        console.log('通知权限已授予');
+                    }
+                });
+            } else if (Notification.permission === 'granted') {
+                console.log('通知权限已存在');
+            }
+        } else {
+            console.warn('此浏览器不支持通知功能');
+        }
+
         // 保存当前目标
         const currentGoal = document.getElementById('currentGoal');
         currentGoal.value = localStorage.getItem('adhd_goal') || '';
@@ -897,6 +1127,53 @@
             const randomIndex = Math.floor(Math.random() * quotes.length);
             quoteEl.textContent = '"' + quotes[randomIndex] + '"';
         }
-    </script>
+
+        // 粒子庆祝特效系统
+        const canvas = document.getElementById('celebrationCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animationId = null;
+
+        // 设置 Canvas 尺寸
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // 粒子类
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 8 + 4;
+                this.speedX = Math.random() * 6 - 3;
+                this.speedY = Math.random() * -15 - 5;
+                this.gravity = 0.5;
+                this.opacity = 1;
+                this.colors = ['#5DADE2', '#52C788', '#E67E22', '#F39C12', '#E74C3C', '#9B59B6'];
+                this.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+            }
+
+            update() {
+                this.speedY += this.gravity;
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.opacity -= 0.01;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+// 动画循环        function animateParticles() {            ctx.clearRect(0, 0, canvas.width, canvas.height);            particles.forEach((particle, index) => {                particle.update();                particle.draw();                // 移除透明度为0的粒子                if (particle.opacity <= 0) {                    particles.splice(index, 1);                }            });            if (particles.length > 0) {                animationId = requestAnimationFrame(animateParticles);            } else {                canvas.style.display = 'none';                cancelAnimationFrame(animationId);            }        }        // 触发庆祝特效        function triggerCelebration() {            canvas.style.display = 'block';            particles = [];            // 从屏幕中心爆发粒子            const centerX = canvas.width / 2;            const centerY = canvas.height / 2;            for (let i = 0; i < 150; i++) {                particles.push(new Particle(centerX, centerY));            }            // 从屏幕底部发射粒子            for (let i = 0; i < 50; i++) {                const x = Math.random() * canvas.width;                particles.push(new Particle(x, canvas.height));            }            animateParticles();        }
+</script>
 </body>
 </html>
