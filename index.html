@@ -12,14 +12,25 @@
         }
 
         :root {
+            /* 专注模式 - 冷色调 */
             --primary: #5B8FB9;
-            --secondary: #301E67;
-            --accent: #03C988;
+            --secondary: #2C3E50;
+            --accent: #5DADE2;
             --warning: #FF6B6B;
             --bg-dark: #1a1a2e;
-            --bg-light: #16213e;
+            --bg-light: #2C3E50;
             --text: #eaeaea;
-            --text-muted: #a0a0a0;
+            --text-muted: #95a5a6;
+        }
+
+        body.rest-mode {
+            /* 休息模式 - 暖色调 */
+            --primary: #E67E22;
+            --secondary: #D35400;
+            --accent: #52C788;
+            --bg-dark: #1e2a1a;
+            --bg-light: #2d4a2d;
+            --text-muted: #a8b89a;
         }
 
         body {
@@ -34,6 +45,11 @@
             display: grid;
             grid-template-columns: 280px 1fr;
             height: 100vh;
+            transition: grid-template-columns 0.3s ease;
+        }
+
+        .container.sidebar-collapsed {
+            grid-template-columns: 80px 1fr;
         }
 
         /* 侧边栏样式 */
@@ -44,7 +60,23 @@
             flex-direction: column;
             gap: 20px;
             overflow-y: auto;
+            overflow-x: hidden;
             border-right: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-content {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .sidebar.collapsed .timer-display {
+            font-size: 1.5rem;
+        }
+
+        .sidebar.collapsed .timer-circle-container {
+            width: 60px;
+            height: 60px;
         }
 
         .logo {
@@ -417,6 +449,46 @@
             font-size: 0.9rem;
             color: var(--text-muted);
         }
+
+        /* 侧边栏呼吸训练样式 */
+        .sidebar-breathing {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        body.rest-mode .sidebar-breathing {
+            display: block;
+        }
+
+        .sidebar-breathing-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px auto;
+            transition: transform 4s ease-in-out;
+            cursor: pointer;
+        }
+
+        .sidebar-breathing-circle.inhale {
+            transform: scale(1.3);
+        }
+
+        .sidebar-breathing-circle.exhale {
+            transform: scale(1);
+        }
+
+        .sidebar-breathing-text {
+            color: #fff;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
@@ -452,13 +524,13 @@
             </div>
 
             <!-- 当前目标 -->
-            <div class="current-goal">
+            <div class="current-goal sidebar-content">
                 <div class="section-title">🎯 当前目标</div>
                 <input type="text" id="currentGoal" placeholder="输入你现在要专注做的事...">
             </div>
 
             <!-- 任务列表 -->
-            <div class="task-section">
+            <div class="task-section sidebar-content">
                 <div class="section-title">📝 待办事项</div>
                 <div class="task-input-group">
                     <input type="text" class="task-input" id="taskInput" placeholder="添加任务...">
@@ -468,7 +540,7 @@
             </div>
 
             <!-- 统计 -->
-            <div class="stats-section">
+            <div class="stats-section sidebar-content">
                 <div class="section-title">📊 今日统计</div>
                 <div class="stats-grid">
                     <div class="stat-item">
@@ -481,20 +553,19 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 呼吸训练（仅休息模式显示） -->
+            <div class="sidebar-breathing">
+                <div class="section-title">🌬️ 呼吸练习</div>
+                <div class="sidebar-breathing-circle" id="sidebarBreathingCircle">
+                    <span class="sidebar-breathing-text" id="sidebarBreathingText">开始</span>
+                </div>
+                <button class="btn btn-primary btn-sm" id="sidebarBreathingBtn" onclick="toggleSidebarBreathing()">开始</button>
+            </div>
         </aside>
 
         <!-- 主内容区 -->
         <main class="main-content">
-            <!-- 呼吸练习 -->
-            <div class="breathing-section">
-                <h2>呼吸练习</h2>
-                <p class="breathing-hint">跟随圆圈呼吸，帮助你平静下来</p>
-                <div class="breathing-circle" id="breathingCircle">
-                    <span id="breathingText">点击开始</span>
-                </div>
-                <button class="btn btn-primary" id="breathingBtn" onclick="toggleBreathing()">开始呼吸练习</button>
-            </div>
-
             <!-- 激励语句 -->
             <div class="motivation-section">
                 <div class="motivation-quote" id="motivationQuote">
@@ -527,6 +598,26 @@
     </div>
 
     <script>
+        // 模式管理
+        let currentMode = 'focus'; // 'focus' 或 'rest'
+        const container = document.querySelector('.container');
+        const sidebar = document.querySelector('.sidebar');
+        const body = document.body;
+
+        function switchToFocusMode() {
+            currentMode = 'focus';
+            body.classList.remove('rest-mode');
+            container.classList.add('sidebar-collapsed');
+            sidebar.classList.add('collapsed');
+        }
+
+        function switchToRestMode() {
+            currentMode = 'rest';
+            body.classList.add('rest-mode');
+            container.classList.remove('sidebar-collapsed');
+            sidebar.classList.remove('collapsed');
+        }
+
         // 番茄钟功能
         let timerSeconds = 25 * 60;
         let totalSeconds = 25 * 60;
@@ -561,6 +652,9 @@
                 startBtn.textContent = '继续';
                 isRunning = false;
             } else {
+                // 开始专注时切换到专注模式
+                switchToFocusMode();
+
                 timerInterval = setInterval(() => {
                     if (timerSeconds > 0) {
                         timerSeconds--;
@@ -571,10 +665,14 @@
                         startBtn.textContent = '开始';
                         // 更新统计
                         stats.pomodoros++;
-                        stats.focusMinutes += 25;
+                        stats.focusMinutes += Math.floor(totalSeconds / 60);
                         localStorage.setItem('adhd_stats', JSON.stringify(stats));
                         document.getElementById('pomodoroCount').textContent = stats.pomodoros;
                         document.getElementById('focusTime').textContent = stats.focusMinutes;
+
+                        // 切换到休息模式
+                        switchToRestMode();
+
                         // 提醒
                         if (Notification.permission === 'granted') {
                             new Notification('专注时间结束！', { body: '休息一下吧！' });
@@ -676,51 +774,50 @@
             localStorage.setItem('adhd_goal', currentGoal.value);
         });
 
-        // 呼吸练习功能
-        let breathingActive = false;
-        let breathingInterval = null;
-        const breathingCircle = document.getElementById('breathingCircle');
-        const breathingText = document.getElementById('breathingText');
-        const breathingBtn = document.getElementById('breathingBtn');
+        // 侧边栏呼吸练习功能
+        let sidebarBreathingActive = false;
+        const sidebarBreathingCircle = document.getElementById('sidebarBreathingCircle');
+        const sidebarBreathingText = document.getElementById('sidebarBreathingText');
+        const sidebarBreathingBtn = document.getElementById('sidebarBreathingBtn');
 
-        function toggleBreathing() {
-            if (breathingActive) {
-                stopBreathing();
+        function toggleSidebarBreathing() {
+            if (sidebarBreathingActive) {
+                stopSidebarBreathing();
             } else {
-                startBreathing();
+                startSidebarBreathing();
             }
         }
 
-        function startBreathing() {
-            breathingActive = true;
-            breathingBtn.textContent = '停止';
-            breathe();
+        function startSidebarBreathing() {
+            sidebarBreathingActive = true;
+            sidebarBreathingBtn.textContent = '停止';
+            sidebarBreathe();
         }
 
-        function stopBreathing() {
-            breathingActive = false;
-            breathingBtn.textContent = '开始呼吸练习';
-            breathingCircle.classList.remove('inhale', 'exhale');
-            breathingText.textContent = '点击开始';
+        function stopSidebarBreathing() {
+            sidebarBreathingActive = false;
+            sidebarBreathingBtn.textContent = '开始';
+            sidebarBreathingCircle.classList.remove('inhale', 'exhale');
+            sidebarBreathingText.textContent = '开始';
         }
 
-        function breathe() {
-            if (!breathingActive) return;
+        function sidebarBreathe() {
+            if (!sidebarBreathingActive) return;
 
             // 吸气 4秒
-            breathingCircle.classList.add('inhale');
-            breathingCircle.classList.remove('exhale');
-            breathingText.textContent = '吸气...';
+            sidebarBreathingCircle.classList.add('inhale');
+            sidebarBreathingCircle.classList.remove('exhale');
+            sidebarBreathingText.textContent = '吸气';
 
             setTimeout(() => {
-                if (!breathingActive) return;
+                if (!sidebarBreathingActive) return;
                 // 呼气 4秒
-                breathingCircle.classList.remove('inhale');
-                breathingCircle.classList.add('exhale');
-                breathingText.textContent = '呼气...';
+                sidebarBreathingCircle.classList.remove('inhale');
+                sidebarBreathingCircle.classList.add('exhale');
+                sidebarBreathingText.textContent = '呼气';
 
                 setTimeout(() => {
-                    if (breathingActive) breathe();
+                    if (sidebarBreathingActive) sidebarBreathe();
                 }, 4000);
             }, 4000);
         }
