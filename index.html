@@ -86,6 +86,42 @@
             margin-bottom: 10px;
         }
 
+        /* 圆环进度条样式 */
+        .timer-circle-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 15px auto;
+        }
+
+        .timer-circle-svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .timer-circle-bg {
+            fill: none;
+            stroke: rgba(255,255,255,0.1);
+            stroke-width: 8;
+        }
+
+        .timer-circle-progress {
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.3s linear;
+        }
+
+        .timer-display-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
         .timer-buttons {
             display: flex;
             gap: 10px;
@@ -395,7 +431,15 @@
             <!-- 番茄钟 -->
             <div class="timer-section">
                 <div class="timer-label">番茄钟计时器</div>
-                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-circle-container">
+                    <svg class="timer-circle-svg" viewBox="0 0 180 180">
+                        <circle class="timer-circle-bg" cx="90" cy="90" r="82"></circle>
+                        <circle class="timer-circle-progress" id="timerCircle" cx="90" cy="90" r="82"></circle>
+                    </svg>
+                    <div class="timer-display-overlay">
+                        <div class="timer-display" id="timerDisplay">25:00</div>
+                    </div>
+                </div>
                 <div class="timer-buttons">
                     <button class="btn btn-primary" id="startBtn">开始</button>
                     <button class="btn btn-secondary" id="resetBtn">重置</button>
@@ -485,17 +529,30 @@
     <script>
         // 番茄钟功能
         let timerSeconds = 25 * 60;
+        let totalSeconds = 25 * 60;
         let timerInterval = null;
         let isRunning = false;
 
         const timerDisplay = document.getElementById('timerDisplay');
         const startBtn = document.getElementById('startBtn');
         const resetBtn = document.getElementById('resetBtn');
+        const timerCircle = document.getElementById('timerCircle');
+
+        // 圆环进度条设置
+        const radius = 82;
+        const circumference = 2 * Math.PI * radius;
+        timerCircle.style.strokeDasharray = circumference;
+        timerCircle.style.strokeDashoffset = 0;
 
         function updateTimerDisplay() {
             const mins = Math.floor(timerSeconds / 60);
             const secs = timerSeconds % 60;
             timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+            // 更新圆环进度
+            const progress = timerSeconds / totalSeconds;
+            const offset = circumference * (1 - progress);
+            timerCircle.style.strokeDashoffset = offset;
         }
 
         function startTimer() {
@@ -533,6 +590,7 @@
         function resetTimer() {
             clearInterval(timerInterval);
             timerSeconds = 25 * 60;
+            totalSeconds = 25 * 60;
             updateTimerDisplay();
             startBtn.textContent = '开始';
             isRunning = false;
@@ -541,6 +599,7 @@
         function setTimer(minutes) {
             clearInterval(timerInterval);
             timerSeconds = minutes * 60;
+            totalSeconds = minutes * 60;
             updateTimerDisplay();
             startBtn.textContent = '开始';
             isRunning = false;
