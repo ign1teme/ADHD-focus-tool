@@ -73,10 +73,10 @@
         }
 
         .timer-display {
-            font-size: 3rem;
+            font-size: 2.2rem;
             font-weight: bold;
             color: var(--accent);
-            margin: 15px 0;
+            margin: 10px 0;
             font-variant-numeric: tabular-nums;
         }
 
@@ -89,9 +89,9 @@
         /* 圆环进度条样式 */
         .timer-circle-container {
             position: relative;
-            width: 180px;
-            height: 180px;
-            margin: 15px auto;
+            width: 140px;
+            height: 140px;
+            margin: 10px auto;
         }
 
         .timer-circle-svg {
@@ -432,9 +432,9 @@
             <div class="timer-section">
                 <div class="timer-label">番茄钟计时器</div>
                 <div class="timer-circle-container">
-                    <svg class="timer-circle-svg" viewBox="0 0 180 180">
-                        <circle class="timer-circle-bg" cx="90" cy="90" r="82"></circle>
-                        <circle class="timer-circle-progress" id="timerCircle" cx="90" cy="90" r="82"></circle>
+                    <svg class="timer-circle-svg" viewBox="0 0 140 140">
+                        <circle class="timer-circle-bg" cx="70" cy="70" r="64"></circle>
+                        <circle class="timer-circle-progress" id="timerCircle" cx="70" cy="70" r="64"></circle>
                     </svg>
                     <div class="timer-display-overlay">
                         <div class="timer-display" id="timerDisplay">25:00</div>
@@ -539,7 +539,7 @@
         const timerCircle = document.getElementById('timerCircle');
 
         // 圆环进度条设置
-        const radius = 82;
+        const radius = 64;
         const circumference = 2 * Math.PI * radius;
         timerCircle.style.strokeDasharray = circumference;
         timerCircle.style.strokeDashoffset = 0;
