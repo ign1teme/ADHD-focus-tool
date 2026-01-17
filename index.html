@@ -49,7 +49,7 @@
         }
 
         .container.sidebar-collapsed {
-            grid-template-columns: 80px 1fr;
+            grid-template-columns: 0px 1fr;
         }
 
         /* 侧边栏样式 */
@@ -65,18 +65,10 @@
             transition: all 0.3s ease;
         }
 
-        .sidebar.collapsed .sidebar-content {
+        .sidebar.collapsed {
+            width: 0;
+            padding: 0;
             opacity: 0;
-            pointer-events: none;
-        }
-
-        .sidebar.collapsed .timer-display {
-            font-size: 1.5rem;
-        }
-
-        .sidebar.collapsed .timer-circle-container {
-            width: 60px;
-            height: 60px;
         }
 
         .logo {
@@ -136,6 +128,37 @@
             display: flex;
             gap: 10px;
             justify-content: center;
+        }
+
+        /* 专注模式下的当前目标显示 */
+        .focus-current-goal {
+            display: none;
+            text-align: center;
+            max-width: 600px;
+            padding: 30px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 16px;
+            border: 2px solid var(--accent);
+        }
+
+        body.focus-mode .focus-current-goal {
+            display: block;
+        }
+
+        .focus-goal-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .focus-goal-text {
+            font-size: 1.8rem;
+            color: var(--accent);
+            font-weight: bold;
+            line-height: 1.4;
+            min-height: 2.5rem;
         }
 
         .timer-display {
@@ -579,16 +602,6 @@
                 </div>
             </div>
 
-            <!-- 专注提示 -->
-            <div class="focus-tips sidebar-content">
-                <div class="section-title">💡 专注小贴士</div>
-                <ul id="tipsList">
-                    <li>把手机放到另一个房间</li>
-                    <li>关闭不必要的浏览器标签</li>
-                    <li>每完成一个番茄钟，起来活动一下</li>
-                </ul>
-            </div>
-
             <!-- 呼吸训练（仅休息模式显示） -->
             <div class="sidebar-breathing">
                 <div class="section-title">🌬️ 呼吸练习</div>
@@ -623,6 +636,12 @@
                     <button class="btn btn-secondary" onclick="setTimer(15)">15分钟</button>
                 </div>
             </div>
+
+            <!-- 当前目标显示（仅专注模式显示） -->
+            <div class="focus-current-goal" id="focusCurrentGoal">
+                <div class="focus-goal-label">当前专注</div>
+                <div class="focus-goal-text" id="focusGoalText">开始前请先设置当前目标</div>
+            </div>
         </main>
     </div>
 
@@ -636,13 +655,21 @@
         function switchToFocusMode() {
             currentMode = 'focus';
             body.classList.remove('rest-mode');
+            body.classList.add('focus-mode');
             container.classList.add('sidebar-collapsed');
             sidebar.classList.add('collapsed');
+
+            // 同步当前目标到主内容区
+            const currentGoalInput = document.getElementById('currentGoal');
+            const focusGoalText = document.getElementById('focusGoalText');
+            const goalValue = currentGoalInput.value.trim();
+            focusGoalText.textContent = goalValue || '专注当下这一件事';
         }
 
         function switchToRestMode() {
             currentMode = 'rest';
             body.classList.add('rest-mode');
+            body.classList.remove('focus-mode');
             container.classList.remove('sidebar-collapsed');
             sidebar.classList.remove('collapsed');
         }
