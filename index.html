@@ -738,10 +738,9 @@
             <!-- 呼吸训练（仅休息模式显示） -->
             <div class="sidebar-breathing">
                 <div class="section-title">🌬️ 呼吸练习</div>
-                <div class="sidebar-breathing-circle" id="sidebarBreathingCircle">
+                <div class="sidebar-breathing-circle" id="sidebarBreathingCircle" onclick="toggleSidebarBreathing()">
                     <span class="sidebar-breathing-text" id="sidebarBreathingText">开始</span>
                 </div>
-                <button class="btn btn-primary btn-sm" id="sidebarBreathingBtn" onclick="toggleSidebarBreathing()">开始</button>
             </div>
         </aside>
 
@@ -1064,7 +1063,6 @@
         let sidebarBreathingActive = false;
         const sidebarBreathingCircle = document.getElementById('sidebarBreathingCircle');
         const sidebarBreathingText = document.getElementById('sidebarBreathingText');
-        const sidebarBreathingBtn = document.getElementById('sidebarBreathingBtn');
 
         function toggleSidebarBreathing() {
             if (sidebarBreathingActive) {
@@ -1076,13 +1074,12 @@
 
         function startSidebarBreathing() {
             sidebarBreathingActive = true;
-            sidebarBreathingBtn.textContent = '停止';
+            sidebarBreathingText.textContent = '停止';
             sidebarBreathe();
         }
 
         function stopSidebarBreathing() {
             sidebarBreathingActive = false;
-            sidebarBreathingBtn.textContent = '开始';
             sidebarBreathingCircle.classList.remove('inhale', 'exhale');
             sidebarBreathingText.textContent = '开始';
         }
