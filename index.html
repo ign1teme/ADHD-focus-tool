@@ -582,15 +582,6 @@
                 </div>
             </div>
 
-            <!-- 激励语句 -->
-            <div class="motivation-section sidebar-content">
-                <div class="section-title">💭 每日激励</div>
-                <div class="motivation-quote" id="motivationQuote">
-                    "专注于当下，一次只做一件事。"
-                </div>
-                <button class="btn btn-secondary" onclick="newQuote()">换一句</button>
-            </div>
-
             <!-- 快捷链接 -->
             <div class="quick-links sidebar-content">
                 <div class="section-title">🔗 常用工具</div>
@@ -792,6 +783,13 @@
                 localStorage.setItem('adhd_tasks', JSON.stringify(tasks));
                 taskInput.value = '';
                 renderTasks();
+
+                // 如果当前目标为空，自动设置为第一个任务
+                const currentGoalInput = document.getElementById('currentGoal');
+                if (!currentGoalInput.value.trim()) {
+                    currentGoalInput.value = text;
+                    localStorage.setItem('adhd_goal', text);
+                }
             }
         }
 
