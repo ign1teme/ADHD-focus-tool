@@ -677,9 +677,11 @@
 
         function startTimer() {
             if (isRunning) {
+                // 暂停时恢复侧边栏
                 clearInterval(timerInterval);
                 startBtn.textContent = '继续';
                 isRunning = false;
+                switchToRestMode();
             } else {
                 // 开始专注时切换到专注模式
                 switchToFocusMode();
