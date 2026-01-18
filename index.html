@@ -955,20 +955,6 @@
 
         <!-- 主内容区 -->
         <main class="main-content">
-            <!-- PRE-FOCUS 准备清单 -->
-            <div id="preFocusChecklist" class="pre-focus-checklist" style="display:none;">
-                <h2>准备进入专注模式</h2>
-                <ul class="checklist-items">
-                    <li><input type="checkbox" id="check1"> 关闭所有干扰源</li>
-                    <li><input type="checkbox" id="check2"> 确认当前目标清晰</li>
-                    <li><input type="checkbox" id="check3"> 准备好专注 25 分钟</li>
-                </ul>
-                <div class="checklist-buttons">
-                    <button class="btn btn-primary" id="confirmFocusBtn" onclick="transitionToState(AppState.FLOW)">确认开始</button>
-                    <button class="btn btn-secondary" id="cancelFocusBtn" onclick="transitionToState(AppState.IDLE)">取消</button>
-                </div>
-            </div>
-
             <!-- 番茄钟 - 中心位置 -->
             <div class="timer-section-center">
                 <div class="timer-label">番茄钟计时器</div>
@@ -1068,9 +1054,6 @@
                 case AppState.IDLE:
                     enterIdleState();
                     break;
-                case AppState.PRE_FOCUS:
-                    enterPreFocusState();
-                    break;
                 case AppState.FLOW:
                     enterFlowState();
                     break;
@@ -1086,7 +1069,6 @@
             container.classList.remove('sidebar-collapsed');
             sidebar.classList.remove('collapsed', 'dimmed');
             document.getElementById('sidebarDot').style.display = 'none';
-            document.getElementById('preFocusChecklist').style.display = 'none';
             document.getElementById('quickLinksToggle').style.display = 'none';
             document.getElementById('quickLinksContainer').style.display = 'grid';
 
@@ -1102,24 +1084,7 @@
             updateTimerDisplay();
         }
 
-        function enterPreFocusState() {
-            // 显示准备清单
-            document.getElementById('preFocusChecklist').style.display = 'flex';
-
-            // 暗化侧边栏
-            sidebar.classList.add('dimmed');
-
-            // 隐藏快捷链接
-            document.getElementById('quickLinksContainer').style.display = 'none';
-
-            // 更新按钮
-            startBtn.textContent = '确认开始';
-        }
-
         function enterFlowState() {
-            // 隐藏准备清单
-            document.getElementById('preFocusChecklist').style.display = 'none';
-
             // 切换到专注模式
             switchToFocusMode();
 
@@ -1132,6 +1097,9 @@
             // 隐藏呼吸练习
             document.getElementById('sidebarBreathingCircle').parentElement.style.display = 'none';
 
+            // 隐藏常显示的startBtn，只显示鼠标移动时出现的flowPauseBtn
+            startBtn.style.display = 'none';
+
             // 设置鼠标检测
             setupFlowMouseDetection();
 
@@ -1143,9 +1111,8 @@
             // 暂停计时器
             pauseTimerCountdown();
 
-            // 显示侧边栏但变暗
+            // 显示侧边栏（可交互）
             switchToRestMode();
-            sidebar.classList.add('dimmed');
 
             // 显示快捷链接切换按钮
             document.getElementById('quickLinksToggle').style.display = 'block';
@@ -1299,9 +1266,6 @@
         function startTimer() {
             switch(currentState) {
                 case AppState.IDLE:
-                    transitionToState(AppState.PRE_FOCUS);
-                    break;
-                case AppState.PRE_FOCUS:
                     transitionToState(AppState.FLOW);
                     break;
                 case AppState.FLOW:
