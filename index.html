@@ -1034,6 +1034,12 @@
 
         let currentState = AppState.IDLE;
 
+        // 计时器变量声明
+        let timerSeconds = 25 * 60;
+        let totalSeconds = 25 * 60;
+        let timerInterval = null;
+        let isRunning = false;
+
         // 状态转换主函数
         function transitionToState(newState) {
             if (currentState === newState) return;
@@ -1121,7 +1127,8 @@
             // 显示呼吸练习作为紧急按钮
             document.getElementById('sidebarBreathingCircle').parentElement.style.display = 'block';
 
-            // 更新按钮
+            // 更新按钮 - 恢复显示并更改文本
+            startBtn.style.display = 'block';
             startBtn.textContent = '继续';
 
             // 添加暂停状态的视觉效果
@@ -1193,6 +1200,11 @@
 
         // ========== 计时器辅助函数 ==========
         function startTimerCountdown() {
+            // 清除任何现有的计时器，防止多个interval同时运行
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
             isRunning = true;
             startBtn.textContent = '暂停';
 
