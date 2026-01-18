@@ -41,6 +41,133 @@
             overflow: hidden;
         }
 
+        /* ========== 四状态系统样式 ========== */
+        /* 状态特定的body类 */
+        body.state-idle {
+            /* 空闲态：默认样式 */
+        }
+
+        body.state-pre-focus {
+            /* 准备态：背景稍微变暗 */
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(44, 62, 80, 0.95));
+        }
+
+        body.state-flow {
+            /* 心流态：全屏沉浸 */
+            background: #0a0a14;
+        }
+
+        body.state-pause {
+            /* 暂停态：磨砂玻璃效果 */
+            background: var(--bg-dark);
+        }
+
+        /* 侧边栏状态 */
+        .sidebar.dimmed {
+            opacity: 0.3;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        /* 计时器暂停状态 */
+        .timer-display.timer-paused {
+            animation: timerFlash 1s infinite;
+            color: #FF6B6B;
+        }
+
+        @keyframes timerFlash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* 计时器极简模式 */
+        .timer-minimal .timer-circle-svg {
+            display: none;
+        }
+
+        .timer-minimal .timer-display {
+            font-size: 5rem;
+            margin: 20px 0;
+        }
+
+        /* 暂停状态的背景模糊 */
+        body.state-pause .main-content {
+            backdrop-filter: blur(5px);
+        }
+
+        /* ========== 隧道效应动画 ========== */
+        /* 进入FLOW状态时的动画 */
+        .container.transitioning-to-flow {
+            animation: tunnelEffect 0.8s ease-out;
+        }
+
+        @keyframes tunnelEffect {
+            from {
+                transform: scale(1);
+            }
+            to {
+                transform: scale(1.05);
+            }
+        }
+
+        /* 侧边栏滑出动画 */
+        .sidebar.sliding-out {
+            animation: slideOutLeft 0.8s ease-out forwards;
+        }
+
+        @keyframes slideOutLeft {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+        }
+
+        /* 当前目标放大动画 */
+        .focus-current-goal.zooming-in {
+            animation: zoomIn 0.8s ease-out forwards;
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* 侧边栏边缘点脉冲动画 */
+        .sidebar-dot {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(93, 173, 226, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(93, 173, 226, 0);
+            }
+        }
+
+        /* 淡入动画 */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* 粒子特效画布 */
         #celebrationCanvas {
             position: fixed;
@@ -262,7 +389,86 @@
             color: #fff;
         }
 
-        /* 任务区域样式 */
+        .btn-danger:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        /* ========== PRE-FOCUS 准备清单样式 ========== */
+        .pre-focus-checklist {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            padding: 40px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            border: 2px solid var(--accent);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .pre-focus-checklist h2 {
+            font-size: 1.8rem;
+            color: var(--accent);
+            margin: 0;
+        }
+
+        .checklist-items {
+            list-style: none;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .checklist-items li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        .checklist-items input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .checklist-buttons {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .checklist-buttons .btn {
+            flex: 1;
+            max-width: 150px;
+            padding: 12px 24px;
+            font-size: 1rem;
+        }
+
+        /* ========== 快捷链接切换按钮 ========== */
+        .quick-links-toggle {
+            padding: 10px 20px;
+            background: var(--bg-light);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .quick-links-toggle:hover {
+            background: var(--accent);
+            color: #000;
+            transform: translateY(-2px);
+        }
         .task-section {
             background: rgba(0,0,0,0.2);
             border-radius: 12px;
@@ -725,7 +931,7 @@
             </div>
 
             <!-- 快捷链接 -->
-            <div class="quick-links sidebar-content">
+            <div class="quick-links sidebar-content" id="quickLinksContainer">
                 <div class="section-title">🔗 常用工具</div>
                 <div class="links-grid">
                     <a href="https://www.google.com" target="_blank" class="link-card">Google</a>
@@ -734,6 +940,9 @@
                     <a href="https://mail.google.com" target="_blank" class="link-card">邮箱</a>
                 </div>
             </div>
+
+            <!-- 快捷链接切换按钮（PAUSE状态显示） -->
+            <button id="quickLinksToggle" class="quick-links-toggle" style="display:none;" onclick="toggleQuickLinks()">🔧 工具</button>
 
             <!-- 呼吸训练（仅休息模式显示） -->
             <div class="sidebar-breathing">
@@ -746,6 +955,20 @@
 
         <!-- 主内容区 -->
         <main class="main-content">
+            <!-- PRE-FOCUS 准备清单 -->
+            <div id="preFocusChecklist" class="pre-focus-checklist" style="display:none;">
+                <h2>准备进入专注模式</h2>
+                <ul class="checklist-items">
+                    <li><input type="checkbox" id="check1"> 关闭所有干扰源</li>
+                    <li><input type="checkbox" id="check2"> 确认当前目标清晰</li>
+                    <li><input type="checkbox" id="check3"> 准备好专注 25 分钟</li>
+                </ul>
+                <div class="checklist-buttons">
+                    <button class="btn btn-primary" id="confirmFocusBtn" onclick="transitionToState(AppState.FLOW)">确认开始</button>
+                    <button class="btn btn-secondary" id="cancelFocusBtn" onclick="transitionToState(AppState.IDLE)">取消</button>
+                </div>
+            </div>
+
             <!-- 番茄钟 - 中心位置 -->
             <div class="timer-section-center">
                 <div class="timer-label">番茄钟计时器</div>
@@ -761,6 +984,8 @@
                 <div class="timer-buttons">
                     <button class="btn btn-primary" id="startBtn">开始</button>
                     <button class="btn btn-secondary" id="resetBtn">重置</button>
+                    <!-- FLOW状态下的暂停按钮 -->
+                    <button class="btn btn-danger" id="flowPauseBtn" style="display:none;" onclick="transitionToState(AppState.PAUSE)">暂停</button>
                 </div>
                 <div class="timer-presets">
                     <button class="btn btn-secondary" onclick="setTimer(25)">25分钟</button>
@@ -779,6 +1004,9 @@
 
     <!-- 粒子特效画布 -->
     <canvas id="celebrationCanvas"></canvas>
+
+    <!-- 侧边栏边缘点（FLOW状态显示） -->
+    <div id="sidebarDot" class="sidebar-dot" style="display:none;"></div>
 
     <script>
         // 模式管理
@@ -809,11 +1037,242 @@
             sidebar.classList.remove('collapsed');
         }
 
-        // 番茄钟功能
-        let timerSeconds = 25 * 60;
-        let totalSeconds = 25 * 60;
-        let timerInterval = null;
-        let isRunning = false;
+        // ========== 四状态系统 ==========
+        // 定义应用状态
+        const AppState = {
+            IDLE: 'idle',           // 空闲态：刚打开页面或完成一轮工作
+            PRE_FOCUS: 'pre-focus', // 准备态：点击了"开始"，但尚未进入计时
+            FLOW: 'flow',           // 心流态：倒计时运行中，最高戒备状态
+            PAUSE: 'pause'          // 暂停态：用户主动中断
+        };
+
+        let currentState = AppState.IDLE;
+
+        // 状态转换主函数
+        function transitionToState(newState) {
+            if (currentState === newState) return;
+
+            console.log(`State transition: ${currentState} → ${newState}`);
+
+            // 移除旧状态类
+            Object.values(AppState).forEach(state => {
+                document.body.classList.remove(`state-${state}`);
+            });
+
+            // 添加新状态类
+            document.body.classList.add(`state-${newState}`);
+            currentState = newState;
+
+            // 执行状态特定的初始化
+            switch(newState) {
+                case AppState.IDLE:
+                    enterIdleState();
+                    break;
+                case AppState.PRE_FOCUS:
+                    enterPreFocusState();
+                    break;
+                case AppState.FLOW:
+                    enterFlowState();
+                    break;
+                case AppState.PAUSE:
+                    enterPauseState();
+                    break;
+            }
+        }
+
+        function enterIdleState() {
+            // 重置UI到初始状态
+            document.body.classList.remove('focus-mode', 'rest-mode');
+            container.classList.remove('sidebar-collapsed');
+            sidebar.classList.remove('collapsed', 'dimmed');
+            document.getElementById('sidebarDot').style.display = 'none';
+            document.getElementById('preFocusChecklist').style.display = 'none';
+            document.getElementById('quickLinksToggle').style.display = 'none';
+            document.getElementById('quickLinksContainer').style.display = 'grid';
+
+            // 重置按钮
+            startBtn.textContent = '开始专注';
+            startBtn.style.display = 'block';
+
+            // 清除计时器
+            clearInterval(timerInterval);
+            isRunning = false;
+            timerSeconds = 25 * 60;
+            totalSeconds = 25 * 60;
+            updateTimerDisplay();
+        }
+
+        function enterPreFocusState() {
+            // 显示准备清单
+            document.getElementById('preFocusChecklist').style.display = 'flex';
+
+            // 暗化侧边栏
+            sidebar.classList.add('dimmed');
+
+            // 隐藏快捷链接
+            document.getElementById('quickLinksContainer').style.display = 'none';
+
+            // 更新按钮
+            startBtn.textContent = '确认开始';
+        }
+
+        function enterFlowState() {
+            // 隐藏准备清单
+            document.getElementById('preFocusChecklist').style.display = 'none';
+
+            // 切换到专注模式
+            switchToFocusMode();
+
+            // 隐藏快捷链接
+            document.getElementById('quickLinksContainer').style.display = 'none';
+
+            // 显示侧边栏边缘点
+            document.getElementById('sidebarDot').style.display = 'block';
+
+            // 隐藏呼吸练习
+            document.getElementById('sidebarBreathingCircle').parentElement.style.display = 'none';
+
+            // 设置鼠标检测
+            setupFlowMouseDetection();
+
+            // 启动计时器倒计时
+            startTimerCountdown();
+        }
+
+        function enterPauseState() {
+            // 暂停计时器
+            pauseTimerCountdown();
+
+            // 显示侧边栏但变暗
+            switchToRestMode();
+            sidebar.classList.add('dimmed');
+
+            // 显示快捷链接切换按钮
+            document.getElementById('quickLinksToggle').style.display = 'block';
+            document.getElementById('quickLinksContainer').style.display = 'none';
+
+            // 显示呼吸练习作为紧急按钮
+            document.getElementById('sidebarBreathingCircle').parentElement.style.display = 'block';
+
+            // 更新按钮
+            startBtn.textContent = '继续';
+
+            // 添加暂停状态的视觉效果
+            timerDisplay.classList.add('timer-paused');
+        }
+
+        // ========== 快捷链接切换功能 ==========
+        function toggleQuickLinks() {
+            const container = document.getElementById('quickLinksContainer');
+            const toggle = document.getElementById('quickLinksToggle');
+
+            if (container.style.display === 'none') {
+                container.style.display = 'grid';
+                toggle.textContent = '🔧 收起工具';
+            } else {
+                container.style.display = 'none';
+                toggle.textContent = '🔧 工具';
+            }
+        }
+
+        // ========== 摩擦力机制：放弃的心理压力 ==========
+        let mouseMovementTimeout = null;
+        let controlsVisible = false;
+
+        function setupFlowMouseDetection() {
+            const timerContainer = document.querySelector('.timer-section-center');
+            if (!timerContainer) return;
+
+            timerContainer.addEventListener('mousemove', () => {
+                if (currentState === AppState.FLOW) {
+                    showFlowControls();
+                    clearTimeout(mouseMovementTimeout);
+                    mouseMovementTimeout = setTimeout(hideFlowControls, 3000);
+                }
+            });
+        }
+
+        function showFlowControls() {
+            if (controlsVisible) return;
+            controlsVisible = true;
+
+            const flowPauseBtn = document.getElementById('flowPauseBtn');
+            if (flowPauseBtn) {
+                flowPauseBtn.style.display = 'block';
+                flowPauseBtn.style.animation = 'fadeIn 0.3s ease-out';
+            }
+        }
+
+        function hideFlowControls() {
+            controlsVisible = false;
+
+            const flowPauseBtn = document.getElementById('flowPauseBtn');
+            if (flowPauseBtn) {
+                flowPauseBtn.style.display = 'none';
+            }
+        }
+
+        function confirmAbandon() {
+            const confirmed = confirm(`确定要放弃这 ${Math.floor(totalSeconds / 60)} 分钟的努力吗？\n\n点击"确定"放弃，点击"取消"继续专注。`);
+
+            if (confirmed) {
+                // 用户选择放弃
+                transitionToState(AppState.IDLE);
+            } else {
+                // 用户选择继续
+                transitionToState(AppState.FLOW);
+            }
+        }
+
+        // ========== 计时器辅助函数 ==========
+        function startTimerCountdown() {
+            isRunning = true;
+            startBtn.textContent = '暂停';
+
+            timerInterval = setInterval(() => {
+                if (timerSeconds > 0) {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                } else {
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    startBtn.textContent = '开始';
+
+                    // 更新统计
+                    stats.pomodoros++;
+                    stats.focusMinutes += Math.floor(totalSeconds / 60);
+                    localStorage.setItem('adhd_stats', JSON.stringify(stats));
+                    document.getElementById('pomodoroCount').textContent = stats.pomodoros;
+                    document.getElementById('focusTime').textContent = stats.focusMinutes;
+
+                    // 更新能量条
+                    updateEnergyBar();
+
+                    // 更新连胜记录
+                    updateStreak();
+
+                    // 触发庆祝特效
+                    triggerCelebration();
+
+                    // 系统通知
+                    if (Notification.permission === 'granted') {
+                        new Notification('🎉 专注时间结束！', { body: '太棒了！休息一下吧！' });
+                    }
+
+                    // 返回IDLE状态
+                    transitionToState(AppState.IDLE);
+                }
+            }, 1000);
+        }
+
+        function pauseTimerCountdown() {
+            clearInterval(timerInterval);
+            isRunning = false;
+        }
+
+        function resumeTimerCountdown() {
+            startTimerCountdown();
+        }
 
         const timerDisplay = document.getElementById('timerDisplay');
         const startBtn = document.getElementById('startBtn');
@@ -838,51 +1297,19 @@
         }
 
         function startTimer() {
-            if (isRunning) {
-                // 暂停时恢复侧边栏
-                clearInterval(timerInterval);
-                startBtn.textContent = '继续';
-                isRunning = false;
-                switchToRestMode();
-            } else {
-                // 开始专注时切换到专注模式
-                switchToFocusMode();
-
-                timerInterval = setInterval(() => {
-                    if (timerSeconds > 0) {
-                        timerSeconds--;
-                        updateTimerDisplay();
-                    } else {
-                        clearInterval(timerInterval);
-                        isRunning = false;
-                        startBtn.textContent = '开始';
-                        // 更新统计
-                        stats.pomodoros++;
-                        stats.focusMinutes += Math.floor(totalSeconds / 60);
-                        localStorage.setItem('adhd_stats', JSON.stringify(stats));
-                        document.getElementById('pomodoroCount').textContent = stats.pomodoros;
-                        document.getElementById('focusTime').textContent = stats.focusMinutes;
-
-                        // 更新能量条
-                        updateEnergyBar();
-
-                        // 更新连胜记录
-                        updateStreak();
-
-                        // 切换到休息模式
-                        switchToRestMode();
-
-                        // 触发庆祝特效
-                        triggerCelebration();
-
-                        // 系统通知
-                        if (Notification.permission === 'granted') {
-                            new Notification('🎉 专注时间结束！', { body: '太棒了！休息一下吧！' });
-                        }
-                    }
-                }, 1000);
-                startBtn.textContent = '暂停';
-                isRunning = true;
+            switch(currentState) {
+                case AppState.IDLE:
+                    transitionToState(AppState.PRE_FOCUS);
+                    break;
+                case AppState.PRE_FOCUS:
+                    transitionToState(AppState.FLOW);
+                    break;
+                case AppState.FLOW:
+                    transitionToState(AppState.PAUSE);
+                    break;
+                case AppState.PAUSE:
+                    transitionToState(AppState.FLOW);
+                    break;
             }
         }
 
