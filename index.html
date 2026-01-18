@@ -12,30 +12,25 @@
         }
 
         :root {
-            /* 专注模式 - 冷色调 */
-            --primary: #5B8FB9;
-            --secondary: #2C3E50;
-            --accent: #5DADE2;
-            --warning: #FF6B6B;
-            --bg-dark: #1a1a2e;
-            --bg-light: #2C3E50;
-            --text: #eaeaea;
-            --text-muted: #95a5a6;
+            /* 极简灰度配色 - OS原生风格 */
+            --primary: #e8e8e8;           /* 浅灰 - 背景元素 */
+            --secondary: #f5f5f5;         /* 更浅的灰 - 卡片背景 */
+            --accent: #10b981;            /* 绿色 - 仅用于开始按钮和进度条 */
+            --warning: #ef4444;           /* 红色 - 警告 */
+            --bg-main: #ffffff;           /* 主背景 - 纯白 */
+            --bg-sidebar: #fafafa;        /* 侧边栏背景 - 极浅灰 */
+            --text: #1f2937;              /* 主文字 - 深灰近黑 */
+            --text-muted: #6b7280;        /* 次要文字 - 中灰 */
+            --border: #e5e7eb;            /* 边框 - 浅灰 */
         }
 
         body.rest-mode {
-            /* 休息模式 - 暖色调 */
-            --primary: #E67E22;
-            --secondary: #D35400;
-            --accent: #52C788;
-            --bg-dark: #1e2a1a;
-            --bg-light: #2d4a2d;
-            --text-muted: #a8b89a;
+            /* 休息模式保持相同的灰度配色 */
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg-dark);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-main);
             color: var(--text);
             height: 100vh;
             overflow: hidden;
@@ -44,22 +39,22 @@
         /* ========== 四状态系统样式 ========== */
         /* 状态特定的body类 */
         body.state-idle {
-            /* 空闲态：默认样式 */
+            /* 空闲态：默认白色背景 */
         }
 
         body.state-pre-focus {
-            /* 准备态：背景稍微变暗 */
-            background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(44, 62, 80, 0.95));
+            /* 准备态：保持白色背景 */
+            background: var(--bg-main);
         }
 
         body.state-flow {
-            /* 心流态：全屏沉浸 */
-            background: #0a0a14;
+            /* 心流态：保持白色背景，让内容凸显 */
+            background: var(--bg-main);
         }
 
         body.state-pause {
-            /* 暂停态：磨砂玻璃效果 */
-            background: var(--bg-dark);
+            /* 暂停态：保持白色背景 */
+            background: var(--bg-main);
         }
 
         /* 侧边栏状态 */
@@ -193,14 +188,14 @@
 
         /* 侧边栏样式 */
         .sidebar {
-            background: var(--bg-light);
+            background: var(--bg-sidebar);
             padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 20px;
             overflow-y: auto;
             overflow-x: hidden;
-            border-right: 1px solid rgba(255,255,255,0.1);
+            border-right: 1px solid var(--border);
             transition: all 0.3s ease;
         }
 
@@ -213,12 +208,13 @@
         .logo {
             text-align: center;
             padding: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid var(--border);
         }
 
         .logo h1 {
             font-size: 1.3rem;
-            color: var(--accent);
+            color: var(--text);
+            font-weight: 600;
         }
 
         .logo p {
@@ -275,9 +271,9 @@
             text-align: center;
             max-width: 600px;
             padding: 30px;
-            background: rgba(0,0,0,0.2);
+            background: var(--secondary);
             border-radius: 16px;
-            border: 2px solid var(--accent);
+            border: 2px solid var(--border);
         }
 
         body.focus-mode .focus-current-goal {
@@ -294,7 +290,7 @@
 
         .focus-goal-text {
             font-size: 1.8rem;
-            color: var(--accent);
+            color: var(--text);
             font-weight: bold;
             line-height: 1.4;
             min-height: 2.5rem;
@@ -303,7 +299,7 @@
         .timer-display {
             font-size: 2.2rem;
             font-weight: bold;
-            color: var(--accent);
+            color: var(--text);
             margin: 10px 0;
             font-variant-numeric: tabular-nums;
         }
@@ -330,13 +326,13 @@
 
         .timer-circle-bg {
             fill: none;
-            stroke: rgba(255,255,255,0.1);
+            stroke: var(--primary);
             stroke-width: 8;
         }
 
         .timer-circle-progress {
             fill: none;
-            stroke: var(--accent);
+            stroke: var(--accent);  /* 绿色进度条 */
             stroke-width: 8;
             stroke-linecap: round;
             transition: stroke-dashoffset 0.3s linear;
@@ -364,24 +360,27 @@
             cursor: pointer;
             font-size: 0.85rem;
             transition: all 0.2s;
+            font-weight: 500;
         }
 
         .btn-primary {
-            background: var(--accent);
-            color: #000;
+            background: var(--accent);  /* 绿色 - 仅用于开始按钮 */
+            color: #ffffff;
         }
 
         .btn-primary:hover {
-            background: #02a870;
+            background: #059669;
+            transform: translateY(-1px);
         }
 
         .btn-secondary {
-            background: rgba(255,255,255,0.1);
+            background: var(--primary);
             color: var(--text);
+            border: 1px solid var(--border);
         }
 
         .btn-secondary:hover {
-            background: rgba(255,255,255,0.2);
+            background: #d1d5db;
         }
 
         .btn-danger {
@@ -390,8 +389,8 @@
         }
 
         .btn-danger:hover {
-            background: #ff5252;
-            transform: translateY(-2px);
+            background: #dc2626;
+            transform: translateY(-1px);
         }
 
         /* ========== PRE-FOCUS 准备清单样式 ========== */
@@ -455,8 +454,8 @@
         /* ========== 快捷链接切换按钮 ========== */
         .quick-links-toggle {
             padding: 10px 20px;
-            background: var(--bg-light);
-            border: 1px solid var(--accent);
+            background: var(--secondary);
+            border: 1px solid var(--border);
             border-radius: 8px;
             color: var(--text);
             cursor: pointer;
@@ -465,23 +464,24 @@
         }
 
         .quick-links-toggle:hover {
-            background: var(--accent);
-            color: #000;
+            background: var(--primary);
             transform: translateY(-2px);
         }
         .task-section {
-            background: rgba(0,0,0,0.2);
+            background: var(--secondary);
             border-radius: 12px;
             padding: 15px;
+            border: 1px solid var(--border);
         }
 
         .section-title {
             font-size: 0.9rem;
-            color: var(--text-muted);
+            color: var(--text);
             margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 8px;
+            font-weight: 600;
         }
 
         .task-input-group {
@@ -494,15 +494,16 @@
             flex: 1;
             min-width: 0;
             padding: 8px 12px;
-            border: none;
+            border: 1px solid var(--border);
             border-radius: 6px;
-            background: rgba(255,255,255,0.1);
+            background: #ffffff;
             color: var(--text);
             font-size: 0.85rem;
         }
 
         .task-input:focus {
             outline: 2px solid var(--accent);
+            border-color: var(--accent);
         }
 
         .task-list {
@@ -516,7 +517,8 @@
             align-items: center;
             gap: 8px;
             padding: 8px;
-            background: rgba(255,255,255,0.05);
+            background: #ffffff;
+            border: 1px solid var(--border);
             border-radius: 6px;
             margin-bottom: 5px;
             font-size: 0.85rem;
@@ -548,18 +550,18 @@
 
         /* 当前目标高亮 */
         .current-goal {
-            background: linear-gradient(135deg, var(--secondary), var(--bg-light));
+            background: var(--secondary);
             border-radius: 12px;
             padding: 15px;
-            border-left: 4px solid var(--accent);
+            border: 2px solid var(--border);
         }
 
         .current-goal input {
             width: 100%;
             padding: 10px;
-            border: none;
+            border: 1px solid var(--border);
             border-radius: 6px;
-            background: rgba(255,255,255,0.1);
+            background: #ffffff;
             color: var(--text);
             font-size: 1rem;
             text-align: center;
@@ -567,13 +569,15 @@
 
         .current-goal input:focus {
             outline: 2px solid var(--accent);
+            border-color: var(--accent);
         }
 
         /* 统计区域 */
         .stats-section {
-            background: rgba(0,0,0,0.2);
+            background: var(--secondary);
             border-radius: 12px;
             padding: 15px;
+            border: 1px solid var(--border);
         }
 
         .stats-grid {
@@ -585,14 +589,15 @@
         .stat-item {
             text-align: center;
             padding: 10px;
-            background: rgba(255,255,255,0.05);
+            background: #ffffff;
+            border: 1px solid var(--border);
             border-radius: 8px;
         }
 
         .stat-value {
             font-size: 1.5rem;
             font-weight: bold;
-            color: var(--accent);
+            color: var(--text);
         }
 
         .stat-label {
@@ -604,7 +609,7 @@
         .energy-bar-container {
             margin-top: 15px;
             padding-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            border-top: 1px solid var(--border);
         }
 
         .energy-bar-label {
@@ -617,15 +622,16 @@
 
         .energy-bar-track {
             height: 20px;
-            background: rgba(255,255,255,0.1);
+            background: var(--primary);
             border-radius: 10px;
             overflow: hidden;
             position: relative;
+            border: 1px solid var(--border);
         }
 
         .energy-bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
+            background: var(--accent);  /* 绿色能量条 */
             border-radius: 10px;
             width: 0%;
             transition: width 1s ease-out;
@@ -651,9 +657,10 @@
 
         /* 连胜记录样式 */
         .streak-section {
-            background: rgba(0,0,0,0.2);
+            background: var(--secondary);
             border-radius: 12px;
             padding: 15px;
+            border: 1px solid var(--border);
         }
 
         .streak-grid {
@@ -667,13 +674,14 @@
             align-items: center;
             gap: 10px;
             padding: 12px;
-            background: rgba(255,255,255,0.05);
+            background: #ffffff;
+            border: 1px solid var(--border);
             border-radius: 8px;
             transition: all 0.3s;
         }
 
         .streak-item:hover {
-            background: rgba(255,255,255,0.1);
+            background: var(--secondary);
             transform: translateY(-2px);
         }
 
@@ -689,7 +697,7 @@
         .streak-value {
             font-size: 1.5rem;
             font-weight: bold;
-            color: var(--accent);
+            color: var(--text);
             line-height: 1;
         }
 
@@ -730,7 +738,8 @@
             width: 150px;
             height: 150px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background: var(--primary);
+            border: 2px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -755,10 +764,11 @@
 
         /* 激励语句 - 侧边栏版本 */
         .sidebar .motivation-section {
-            background: rgba(0,0,0,0.2);
+            background: var(--secondary);
             border-radius: 12px;
             padding: 15px;
             text-align: center;
+            border: 1px solid var(--border);
         }
 
         .sidebar .motivation-quote {
@@ -771,9 +781,10 @@
 
         /* 快捷链接 - 侧边栏版本 */
         .sidebar .quick-links {
-            background: rgba(0,0,0,0.2);
+            background: var(--secondary);
             border-radius: 12px;
             padding: 15px;
+            border: 1px solid var(--border);
         }
 
         .sidebar .links-grid {
@@ -784,7 +795,8 @@
 
         .sidebar .link-card {
             padding: 8px 12px;
-            background: rgba(255,255,255,0.1);
+            background: #ffffff;
+            border: 1px solid var(--border);
             border-radius: 6px;
             color: var(--text);
             text-decoration: none;
@@ -794,15 +806,16 @@
         }
 
         .sidebar .link-card:hover {
-            background: var(--accent);
-            color: #000;
+            background: var(--primary);
+            border-color: var(--text-muted);
         }
 
         /* 专注提示 - 侧边栏版本 */
         .sidebar .focus-tips {
-            background: rgba(0,0,0,0.2);
+            background: var(--secondary);
             border-radius: 12px;
             padding: 15px;
+            border: 1px solid var(--border);
         }
 
         .sidebar .focus-tips ul {
@@ -811,7 +824,8 @@
 
         .sidebar .focus-tips li {
             padding: 8px 12px;
-            background: rgba(255,255,255,0.05);
+            background: #ffffff;
+            border: 1px solid var(--border);
             border-radius: 6px;
             margin-bottom: 8px;
             font-size: 0.85rem;
@@ -820,11 +834,12 @@
 
         /* 侧边栏呼吸训练样式 */
         .sidebar-breathing {
-            background: rgba(0,0,0,0.2);
+            background: var(--secondary);
             border-radius: 12px;
             padding: 15px;
             text-align: center;
             display: none;
+            border: 1px solid var(--border);
         }
 
         body.rest-mode .sidebar-breathing {
@@ -835,7 +850,8 @@
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background: var(--primary);
+            border: 2px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: center;
