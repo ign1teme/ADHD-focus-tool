@@ -1106,6 +1106,9 @@
             // 隐藏常显示的startBtn，只显示鼠标移动时出现的flowPauseBtn
             startBtn.style.display = 'none';
 
+            // 移除暂停状态的视觉效果，恢复平静的蓝色
+            timerDisplay.classList.remove('timer-paused');
+
             // 设置鼠标检测
             setupFlowMouseDetection();
 
