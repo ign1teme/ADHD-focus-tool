@@ -1,0 +1,45 @@
+{
+  "name": "adhd-focus-timer",
+  "version": "1.0.0",
+  "description": "ADHD专注浏览器 - 全局置顶番茄钟",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
+  },
+  "keywords": [
+    "ADHD",
+    "focus",
+    "pomodoro",
+    "timer"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.adhd.focus.timer",
+    "productName": "ADHD专注计时器",
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "build/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "build/icon.png"
+    },
+    "files": [
+      "main.js",
+      "index.html",
+      "preload.js"
+    ]
+  }
+}
